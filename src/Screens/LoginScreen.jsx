@@ -1,18 +1,24 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import React, { useState } from "react";
 import CustomInput from "../components/CustomInput/CustomInput";
 import CustomButton from "../components/CustomButton/CustomButton";
-
+import { toggleVisibilityHelper } from "../helpers/helpers";
 const LoginScreen = () => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+
+  const [isEmailFocus, setIsEmailFocus] = useState(false);
+  const [isPassFocus, setIsPassFocus] = useState(false);
+
+  const { visibility, showPass, toggleVisibility } = toggleVisibilityHelper();
 
   const onSignUpPressed = () => {
     console.warn("Sign up");
   };
   const onSignInPressed = () => {
-    console.warn("Sign in");
+    console.warn(email, password);
   };
+
   return (
     <View style={styles.root}>
       <Text style={styles.title}>Увійти</Text>
@@ -20,25 +26,28 @@ const LoginScreen = () => {
         placeholder="Адреса електронної пошти"
         value={email}
         setValue={setEmail}
+        keyboardType="email-address"
+        onBlur={() => setIsEmailFocus(false)}
+        onFocus={() => setIsEmailFocus(true)}
+        type={!isEmailFocus ? null : "TERTIARY"}
       />
       <View style={styles.password}>
         <CustomInput
           placeholder="••••••••••••"
           value={password}
           setValue={setPassword}
+          secureTextEntry={visibility}
+          onBlur={() => setIsPassFocus(false)}
+          onFocus={() => setIsPassFocus(true)}
+          type={!isPassFocus ? null : "TERTIARY"}
         />
-        <View style={styles.textVisible}>
-          <Text>Показати</Text>
-        </View>
+        <Pressable style={styles.textVisible} onPress={toggleVisibility}>
+          <Text>{showPass}</Text>
+        </Pressable>
       </View>
       <CustomButton text="Увійти" onPress={onSignInPressed} type="PRIMARY" />
-      {/* <CustomButton
-        text="Немає акаунту? Зареєструватися"
-        onPress={onSignUpPressed}
-        type="TERTIARY"
-      /> */}
       <View style={styles.textReg}>
-        <Text>Немає акаунту? </Text>
+        <Text style={styles.text}>Немає акаунту? </Text>
         <Text style={styles.textRegClick} onPress={onSignUpPressed}>
           Зареєструватися
         </Text>
@@ -66,16 +75,18 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Medium",
     fontSize: 30,
     fontStyle: "normal",
-    // fontWeight: 500,
     letterSpacing: 0.3,
   },
   textReg: {
     flexDirection: "row",
-    color: "#1B4371",
     marginTop: 16,
+  },
+  text: {
+    color: "#1B4371",
   },
   textRegClick: {
     textDecorationLine: "underline",
+    color: "#1B4371",
   },
   password: {
     position: "relative",
@@ -83,7 +94,7 @@ const styles = StyleSheet.create({
   },
   textVisible: {
     position: "absolute",
-    top: 32,
+    top: "50%",
     right: 16,
   },
 });

@@ -1,5 +1,12 @@
 import { StatusBar } from "expo-status-bar";
-import { ImageBackground, StyleSheet, View } from "react-native";
+import {
+  ImageBackground,
+  Keyboard,
+  KeyboardAvoidingView,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import { useFonts } from "expo-font";
 import RegistrationScreen from "./src/Screens/RegistrationScreen";
 import LoginScreen from "./src/Screens/LoginScreen";
@@ -16,15 +23,23 @@ export default function App() {
   }
 
   return (
-    <View style={styles.root}>
-      <ImageBackground
-        style={styles.image}
-        source={require("./assets/images/PhotoBG.png")}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={-150}
       >
-        {!isRegistered ? <RegistrationScreen /> : <LoginScreen />}
-      </ImageBackground>
-      {/* <StatusBar style="auto" /> */}
-    </View>
+        <View style={styles.root}>
+          <ImageBackground
+            style={styles.image}
+            source={require("./assets/images/PhotoBG.png")}
+          >
+            {!isRegistered ? <RegistrationScreen /> : <LoginScreen />}
+          </ImageBackground>
+          <StatusBar style="auto" />
+        </View>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -33,16 +48,12 @@ const styles = StyleSheet.create({
     flex: 1,
     display: "flex",
     backgroundColor: "#ffd",
-    // width: "100%",
-    // height: "100%",
-
     alignItems: "center",
     justifyContent: "flex-end",
   },
   image: {
     flex: 1,
     width: "100%",
-    // height: "100%",
     alignItems: "center",
     justifyContent: "flex-end",
     resizeMode: "stretch",

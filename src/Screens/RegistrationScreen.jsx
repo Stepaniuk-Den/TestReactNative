@@ -1,19 +1,28 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
 import { AntDesign } from "@expo/vector-icons";
+import { toggleVisibilityHelper } from "../helpers/helpers";
 
 const RegistrationScreen = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
 
+  const [isUserFocus, setIsUserFocus] = useState(false);
+  const [isEmailFocus, setIsEmailFocus] = useState(false);
+  const [isPassFocus, setIsPassFocus] = useState(false);
+
+  const { visibility, showPass, toggleVisibility } = toggleVisibilityHelper();
+
   const onSignUpPressed = () => {
-    console.warn("Sign up");
+    console.warn(
+      `username: ${username}, email: ${email}, password: ${password}`
+    );
   };
   const onSignInPressed = () => {
-    console.warn("Sign in");
+    // console.warn("Sign in");
   };
 
   return (
@@ -28,34 +37,41 @@ const RegistrationScreen = () => {
         placeholder="Логін"
         value={username}
         setValue={setUsername}
+        onBlur={() => setIsUserFocus(false)}
+        onFocus={() => setIsUserFocus(true)}
+        type={!isUserFocus ? null : "TERTIARY"}
       />
       <CustomInput
         placeholder="Адреса електронної пошти"
         value={email}
         setValue={setEmail}
+        keyboardType="email-address"
+        autoComplete="email"
+        onBlur={() => setIsEmailFocus(false)}
+        onFocus={() => setIsEmailFocus(true)}
+        type={!isEmailFocus ? null : "TERTIARY"}
       />
       <View style={styles.password}>
         <CustomInput
           placeholder="Пароль"
           value={password}
           setValue={setPassword}
+          secureTextEntry={visibility}
+          onBlur={() => setIsPassFocus(false)}
+          onFocus={() => setIsPassFocus(true)}
+          type={!isPassFocus ? null : "TERTIARY"}
         />
-        <View style={styles.textVisible}>
-          <Text>Показати</Text>
-        </View>
+        <Pressable style={styles.textVisible} onPress={toggleVisibility}>
+          <Text>{showPass}</Text>
+        </Pressable>
       </View>
       <CustomButton
         text="Зареєструватися"
         onPress={onSignUpPressed}
         type="PRIMARY"
       />
-      {/* <CustomButton
-        text="Вже є акаунт? Увійти"
-        onPress={onSignInPressed}
-        type="TERTIARY"
-      /> */}
       <View style={styles.textReg}>
-        <Text>Вже є акаунт? </Text>
+        <Text style={styles.text}>Вже є акаунт? </Text>
         <Text style={styles.textRegClick} onPress={onSignInPressed}>
           Увійти
         </Text>
@@ -73,7 +89,6 @@ const styles = StyleSheet.create({
     padding: 16,
     width: "100%",
     height: 549,
-    // marginTop: 263,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
@@ -85,7 +100,6 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Medium",
     fontSize: 30,
     fontStyle: "normal",
-    // fontWeight: 500,
     letterSpacing: 0.3,
   },
   avatar: {
@@ -103,14 +117,19 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: -12,
     top: 88,
+    borderRadius: Platform.OS === "ios" ? "50%" : 50,
+    backgroundColor: "#fff",
   },
   textReg: {
     flexDirection: "row",
-    color: "#1B4371",
     marginTop: 16,
+  },
+  text: {
+    color: "#1B4371",
   },
   textRegClick: {
     textDecorationLine: "underline",
+    color: "#1B4371",
   },
   password: {
     position: "relative",
@@ -118,7 +137,7 @@ const styles = StyleSheet.create({
   },
   textVisible: {
     position: "absolute",
-    top: 32,
+    top: "50%",
     right: 16,
   },
 });
