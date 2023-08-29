@@ -3,12 +3,15 @@ import React from "react";
 
 const CustomInput = ({
   value,
-  setValue,
+  autoCapitalize,
   placeholder,
   keyboardType,
   secureTextEntry,
   type,
   autoComplete,
+  onChangeText,
+  error,
+  touched,
   onFocus,
   onBlur,
 }) => {
@@ -18,10 +21,13 @@ const CustomInput = ({
         style={styles.input}
         placeholder={placeholder}
         value={value}
-        onChangeText={setValue}
+        autoCapitalize={autoCapitalize}
         keyboardType={keyboardType}
         secureTextEntry={secureTextEntry}
         autoComplete={autoComplete}
+        onChangeText={onChangeText}
+        error={error}
+        touched={touched}
         onBlur={onBlur}
         onFocus={onFocus}
       />

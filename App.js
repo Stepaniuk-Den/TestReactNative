@@ -8,8 +8,15 @@ import {
   View,
 } from "react-native";
 import { useFonts } from "expo-font";
+
 import RegistrationScreen from "./src/Screens/RegistrationScreen";
 import LoginScreen from "./src/Screens/LoginScreen";
+
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import "react-native-gesture-handler";
+
+const MainStack = createStackNavigator();
 
 export default function App() {
   const isRegistered = false;
@@ -47,7 +54,6 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     display: "flex",
-    backgroundColor: "#ffd",
     alignItems: "center",
     justifyContent: "flex-end",
   },

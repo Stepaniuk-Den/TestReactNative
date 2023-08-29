@@ -1,14 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
 import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
+
 import { AntDesign } from "@expo/vector-icons";
+
 import { toggleVisibilityHelper } from "../helpers/helpers";
+import RegisterSchema from "../validation/RegisterSchema";
 
 const RegistrationScreen = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
+  // const [username, setUsername] = useState("");
+  // const [password, setPassword] = useState("");
+  // const [email, setEmail] = useState("");
 
   const [isUserFocus, setIsUserFocus] = useState(false);
   const [isEmailFocus, setIsEmailFocus] = useState(false);
@@ -16,15 +22,28 @@ const RegistrationScreen = () => {
 
   const { visibility, showPass, toggleVisibility } = toggleVisibilityHelper();
 
-  const onSignUpPressed = () => {
-    console.warn(
-      `username: ${username}, email: ${email}, password: ${password}`
-    );
-  };
+  // const onSignUpPressed = () => {
+  //   console.warn(
+  //     `username: ${username}, email: ${email}, password: ${password}`
+  //   );
+  // };
   const onSignInPressed = () => {
     // console.warn("Sign in");
   };
 
+  const { handleChange, handleBlur, handleSubmit, values, errors, touched } =
+    useFormik({
+      validationSchema: RegisterSchema,
+      initialValues: {
+        username: "",
+        email: "",
+        password: "",
+      },
+      onSubmit: (values) =>
+        console.warn(
+          `Username: ${values.username}, Email: ${values.email}, Password: ${values.password}`
+        ),
+    });
   return (
     <View style={styles.root}>
       <View style={styles.avatar}>
@@ -35,18 +54,27 @@ const RegistrationScreen = () => {
       <Text style={styles.title}>Реєстрація</Text>
       <CustomInput
         placeholder="Логін"
-        value={username}
-        setValue={setUsername}
+        value={values.username}
+        autoCapitalize="none"
+        autoComplete="username"
+        onChangeText={handleChange("username")}
+        error={errors.username}
+        touched={touched.username}
+        onSubmitEditing={() => handleSubmit()}
         onBlur={() => setIsUserFocus(false)}
         onFocus={() => setIsUserFocus(true)}
         type={!isUserFocus ? null : "TERTIARY"}
       />
       <CustomInput
         placeholder="Адреса електронної пошти"
-        value={email}
-        setValue={setEmail}
-        keyboardType="email-address"
+        value={values.email}
+        autoCapitalize="none"
         autoComplete="email"
+        keyboardType="email-address"
+        onChangeText={handleChange("email")}
+        error={errors.email}
+        touched={touched.email}
+        onSubmitEditing={() => handleSubmit()}
         onBlur={() => setIsEmailFocus(false)}
         onFocus={() => setIsEmailFocus(true)}
         type={!isEmailFocus ? null : "TERTIARY"}
@@ -54,9 +82,14 @@ const RegistrationScreen = () => {
       <View style={styles.password}>
         <CustomInput
           placeholder="Пароль"
-          value={password}
-          setValue={setPassword}
+          value={values.password}
+          autoComplete="new-password"
+          autoCapitalize="none"
+          onChangeText={handleChange("password")}
           secureTextEntry={visibility}
+          error={errors.password}
+          touched={touched.password}
+          onSubmitEditing={() => handleSubmit()}
           onBlur={() => setIsPassFocus(false)}
           onFocus={() => setIsPassFocus(true)}
           type={!isPassFocus ? null : "TERTIARY"}
@@ -67,7 +100,7 @@ const RegistrationScreen = () => {
       </View>
       <CustomButton
         text="Зареєструватися"
-        onPress={onSignUpPressed}
+        onPress={handleSubmit}
         type="PRIMARY"
       />
       <View style={styles.textReg}>
