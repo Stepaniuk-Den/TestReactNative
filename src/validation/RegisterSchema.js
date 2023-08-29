@@ -20,7 +20,7 @@ const password = Yup.string()
 
 const RegisterSchema = Yup.object().shape({
   username,
-  phone,
+  // phone,
   email,
   password,
 });

@@ -2,6 +2,7 @@ import { TextInput, View, StyleSheet } from "react-native";
 import React from "react";
 
 const CustomInput = ({
+  name,
   value,
   autoCapitalize,
   placeholder,
@@ -10,6 +11,7 @@ const CustomInput = ({
   type,
   autoComplete,
   onChangeText,
+  onSubmitEditing,
   error,
   touched,
   onFocus,
@@ -20,12 +22,14 @@ const CustomInput = ({
       <TextInput
         style={styles.input}
         placeholder={placeholder}
+        name={name}
         value={value}
         autoCapitalize={autoCapitalize}
         keyboardType={keyboardType}
         secureTextEntry={secureTextEntry}
         autoComplete={autoComplete}
         onChangeText={onChangeText}
+        onSubmitEditing={onSubmitEditing}
         error={error}
         touched={touched}
         onBlur={onBlur}
