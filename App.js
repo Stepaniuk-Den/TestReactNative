@@ -14,6 +14,7 @@ export default function App() {
   const [fontsLoaded] = useFonts({
     "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
     "Roboto-Medium": require("./assets/fonts/Roboto-Medium.ttf"),
+    "Roboto-Bold": require("./assets/fonts/Roboto-Bold.ttf"),
   });
 
   if (!fontsLoaded) {
@@ -33,24 +34,14 @@ export default function App() {
           component={LoginScreen}
           options={{ headerShown: false }}
         />
-        {/* <MainStack.Screen name="Home" component={Home} /> */}
+        <MainStack.Screen
+          name="Home"
+          component={Home}
+          options={{
+            headerShown: false,
+          }}
+        />
       </MainStack.Navigator>
     </NavigationContainer>
   );
 }
-
-// const styles = StyleSheet.create({
-//   root: {
-//     flex: 1,
-//     display: "flex",
-//     alignItems: "center",
-//     justifyContent: "flex-end",
-//   },
-//   image: {
-//     flex: 1,
-//     width: "100%",
-//     alignItems: "center",
-//     justifyContent: "flex-end",
-//     resizeMode: "stretch",
-//   },
-// });

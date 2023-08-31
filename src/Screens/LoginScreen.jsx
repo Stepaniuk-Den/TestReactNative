@@ -47,7 +47,8 @@ const LoginScreen = () => {
                 validationSchema={LoginSchema}
                 initialValues={{ email: "", password: "" }}
                 onSubmit={(values) => {
-                  console.warn(values);
+                  // console.warn(values);
+                  navigation.navigate("Home");
                 }}
               >
                 {({
@@ -87,7 +88,6 @@ const LoginScreen = () => {
                         name="password"
                         placeholder="••••••••••••"
                         value={values.password}
-                        autoComplete="new-password"
                         autoCapitalize="none"
                         onChangeText={handleChange("password")}
                         secureTextEntry={visibility}

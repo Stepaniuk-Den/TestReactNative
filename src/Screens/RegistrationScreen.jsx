@@ -58,8 +58,11 @@ const RegistrationScreen = () => {
               <Formik
                 validationSchema={RegisterSchema}
                 initialValues={{ username: "", email: "", password: "" }}
-                onSubmit={(values) => {
-                  console.warn(values);
+                onSubmit={(values, actions) => {
+                  // console.warn(values);
+                  // addUser(values);
+                  navigation.navigate("Home", values);
+                  actions.resetForm();
                 }}
               >
                 {({
@@ -127,7 +130,6 @@ const RegistrationScreen = () => {
                         name="password"
                         placeholder="Пароль"
                         value={values.password}
-                        autoComplete="new-password"
                         autoCapitalize="none"
                         onChangeText={handleChange("password")}
                         secureTextEntry={visibility}
@@ -204,7 +206,6 @@ const styles = StyleSheet.create({
   rootReg: {
     position: "relative",
     backgroundColor: "#fff",
-    // flex: 1,
     alignItems: "center",
     padding: 16,
     width: "100%",
@@ -237,7 +238,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: -12,
     top: 88,
-    borderRadius: Platform.OS === "ios" ? "50%" : 50,
+    borderRadius: 50,
     backgroundColor: "#fff",
   },
   textReg: {

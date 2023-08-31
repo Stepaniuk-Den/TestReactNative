@@ -15,29 +15,29 @@ const CustomButton = ({ onPress, text, type }) => {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-
+    paddingVertical: 16,
+    paddingHorizontal: 32,
     alignItems: "center",
+    borderRadius: 100,
   },
   container_PRIMARY: {
     backgroundColor: "#FF6C00",
-
-    paddingVertical: 16,
-    paddingHorizontal: 32,
     marginTop: 43,
-
-    borderRadius: 100,
   },
 
-  container_TERTIARY: {
-    marginTop: 16,
+  container_INACTIVE: {
+    marginTop: 32,
+    backgroundColor: "#f6f6f6",
   },
 
   text: {
     fontWeight: 400,
     color: "white",
   },
-  text_TERTIARY: {
-    color: "#1B4371",
+  text_INACTIVE: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
+    color: "#bdbdbd",
   },
 });
 export default CustomButton;

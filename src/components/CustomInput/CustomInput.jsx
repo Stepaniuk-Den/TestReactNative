@@ -20,7 +20,7 @@ const CustomInput = ({
   return (
     <View style={[styles.container, styles[`container_${type}`]]}>
       <TextInput
-        style={styles.input}
+        style={[styles.input, styles[`input_${type}`]]}
         placeholder={placeholder}
         name={name}
         value={value}
@@ -49,7 +49,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginTop: 16,
   },
-  container_PRIMARY: {},
+  container_INACTIVE: {
+    borderRadius: 0,
+    borderWidth: 0,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e8e8e8",
+    backgroundColor: "#fff",
+    paddingLeft: 4,
+  },
+  container_INACTIVE_MAP: {
+    borderRadius: 0,
+    borderWidth: 0,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e8e8e8",
+    backgroundColor: "#fff",
+    paddingLeft: 4,
+  },
   container_TERTIARY: {
     borderColor: "#FF6C00",
     backgroundColor: "#fff",
@@ -58,6 +73,18 @@ const styles = StyleSheet.create({
   input: {
     padding: 16,
     color: "#212121",
+  },
+  input_INACTIVE: {
+    paddingLeft: 0,
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
+    // color: "#212121",
+  },
+  input_INACTIVE_MAP: {
+    paddingLeft: 34,
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
+    // color: "#212121",
   },
 });
 
