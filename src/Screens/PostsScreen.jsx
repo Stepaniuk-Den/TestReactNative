@@ -1,18 +1,24 @@
 import { View, Text, StyleSheet, Image } from "react-native";
 import React from "react";
+import Post from "../components/Post/Post";
 
 const PostsScreen = () => {
   return (
     <View style={styles.root}>
       <View style={styles.user}>
         <View style={styles.userAvatar}>
-          <Image source={require("../../assets/images/PhotoBG.png")} />
+          <Image
+            style={styles.userImage}
+            source={require("../../assets/images/testAvatar.png")}
+            resizeMode="cover"
+          />
         </View>
         <View style={styles.userData}>
           <Text style={styles.userName}>userName</Text>
           <Text style={styles.userEmail}>email</Text>
         </View>
       </View>
+      <Post />
     </View>
   );
 };
@@ -36,6 +42,14 @@ const styles = StyleSheet.create({
     height: 60,
     overflow: "hidden",
   },
+  userImage: {
+    width: 60,
+    height: 60,
+    // resizeMode: "stretch",
+    // resizeMode: "contain",
+    // resizeMode: "cover",
+  },
+
   userData: {
     marginHorizontal: 8,
   },

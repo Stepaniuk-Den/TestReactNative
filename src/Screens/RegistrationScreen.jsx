@@ -8,6 +8,8 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
+  Image,
+  StatusBar,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -27,6 +29,7 @@ const RegistrationScreen = () => {
   const [isUserFocus, setIsUserFocus] = useState(false);
   const [isEmailFocus, setIsEmailFocus] = useState(false);
   const [isPassFocus, setIsPassFocus] = useState(false);
+  const [avatar, setAvatar] = useState(null);
 
   const { visibility, showPass, toggleVisibility } = toggleVisibilityHelper();
 
@@ -37,6 +40,7 @@ const RegistrationScreen = () => {
       <KeyboardAvoidingView
         behavior={Platform.OS == "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
+        // keyboardVerticalOffset={-160}
         keyboardVerticalOffset={Platform.OS == "ios" ? -160 : verticalOffset}
       >
         <View style={styles.root}>
@@ -46,9 +50,15 @@ const RegistrationScreen = () => {
           >
             <View style={styles.rootReg}>
               <View style={styles.avatar}>
+                {avatar ? (
+                  <Image
+                    source={require("../../assets/images/testAvatar.png")}
+                    resizeMode="contain"
+                  />
+                ) : null}
                 <View style={styles.addIconContainer}>
                   <AntDesign
-                    style={styles.addIcon}
+                    style={avatar ? styles.deleteIcon : styles.addIcon}
                     name="pluscircleo"
                     size={24}
                   />
@@ -74,58 +84,72 @@ const RegistrationScreen = () => {
                   touched,
                 }) => (
                   <>
-                    <CustomInput
-                      name="username"
-                      placeholder="Логін"
-                      value={values.username}
-                      autoCapitalize="none"
-                      autoComplete="username"
-                      onChangeText={handleChange("username")}
-                      error={errors.username}
-                      touched={touched.username}
-                      onSubmitEditing={() => handleSubmit()}
-                      onBlur={() => {
-                        setIsUserFocus(false);
-                        handleBlur("username");
-                      }}
-                      onFocus={() => setIsUserFocus(true)}
-                      type={!isUserFocus ? null : "TERTIARY"}
-                    />
-                    {errors.username && touched.username ? (
-                      <Text style={{ fontSize: 10, color: "red" }}>
-                        {errors.username}
-                      </Text>
-                    ) : null}
-                    <CustomInput
-                      name="email"
-                      placeholder="Адреса електронної пошти"
-                      value={values.email}
-                      autoCapitalize="none"
-                      autoComplete="email"
-                      keyboardType="email-address"
-                      onChangeText={handleChange("email")}
-                      error={errors.email}
-                      touched={touched.email}
-                      onSubmitEditing={() => handleSubmit()}
-                      onBlur={() => {
-                        setIsEmailFocus(false);
-                        handleBlur("email");
-                        Platform.OS === "ios"
-                          ? null
-                          : setVerticalOffset(verticalOffsetDefault);
-                      }}
-                      onFocus={() => {
-                        setIsEmailFocus(true);
-                        Platform.OS === "ios" ? null : setVerticalOffset(-185);
-                      }}
-                      type={!isEmailFocus ? null : "TERTIARY"}
-                    />
-                    {errors.email && touched.email ? (
-                      <Text style={{ fontSize: 10, color: "red" }}>
-                        {errors.email}
-                      </Text>
-                    ) : null}
-                    <View style={styles.password}>
+                    <View style={styles.inputContainer}>
+                      <CustomInput
+                        name="username"
+                        placeholder="Логін"
+                        value={values.username}
+                        autoCapitalize="none"
+                        autoComplete="username"
+                        onChangeText={handleChange("username")}
+                        error={errors.username}
+                        touched={touched.username}
+                        onSubmitEditing={() => handleSubmit()}
+                        onBlur={() => {
+                          handleBlur("username");
+                          setIsUserFocus(false);
+                        }}
+                        onFocus={() => setIsUserFocus(true)}
+                        type={
+                          !isUserFocus
+                            ? null
+                            : errors.username && touched.username
+                            ? "ERROR"
+                            : "TERTIARY"
+                        }
+                      />
+                      {errors.username && touched.username ? (
+                        <Text style={styles.errors}>{errors.username}</Text>
+                      ) : null}
+                    </View>
+                    <View style={styles.inputContainer}>
+                      <CustomInput
+                        name="email"
+                        placeholder="Адреса електронної пошти"
+                        value={values.email}
+                        autoCapitalize="none"
+                        autoComplete="email"
+                        keyboardType="email-address"
+                        onChangeText={handleChange("email")}
+                        error={errors.email}
+                        touched={touched.email}
+                        onSubmitEditing={() => handleSubmit()}
+                        onBlur={() => {
+                          setIsEmailFocus(false);
+                          handleBlur("email");
+                          Platform.OS === "ios"
+                            ? null
+                            : setVerticalOffset(verticalOffsetDefault);
+                        }}
+                        onFocus={() => {
+                          setIsEmailFocus(true);
+                          Platform.OS === "ios"
+                            ? null
+                            : setVerticalOffset(-185);
+                        }}
+                        type={
+                          !isEmailFocus
+                            ? null
+                            : errors.email && touched.email
+                            ? "ERROR"
+                            : "TERTIARY"
+                        }
+                      />
+                      {errors.email && touched.email ? (
+                        <Text style={styles.errors}>{errors.email}</Text>
+                      ) : null}
+                    </View>
+                    <View style={styles.inputContainer}>
                       <CustomInput
                         name="password"
                         placeholder="Пароль"
@@ -149,7 +173,13 @@ const RegistrationScreen = () => {
                             ? null
                             : setVerticalOffset(-260);
                         }}
-                        type={!isPassFocus ? null : "TERTIARY"}
+                        type={
+                          !isPassFocus
+                            ? null
+                            : errors.password && touched.password
+                            ? "ERROR"
+                            : "TERTIARY"
+                        }
                       />
                       <Pressable
                         style={styles.textVisible}
@@ -157,12 +187,10 @@ const RegistrationScreen = () => {
                       >
                         <Text>{showPass}</Text>
                       </Pressable>
+                      {errors.password && touched.password ? (
+                        <Text style={styles.errors}>{errors.password}</Text>
+                      ) : null}
                     </View>
-                    {errors.password && touched.password ? (
-                      <Text style={{ fontSize: 10, color: "red" }}>
-                        {errors.password}
-                      </Text>
-                    ) : null}
                     <CustomButton
                       text="Зареєструватися"
                       onPress={handleSubmit}
@@ -231,13 +259,18 @@ const styles = StyleSheet.create({
     height: 120,
     marginTop: -60,
   },
+
+  deleteIcon: {
+    color: "#BDBDBD",
+    transform: [{ rotate: "45deg" }],
+  },
   addIcon: {
     color: "#FF6C00",
   },
   addIconContainer: {
     position: "absolute",
     right: -12,
-    top: 88,
+    top: 82,
     borderRadius: 50,
     backgroundColor: "#fff",
   },
@@ -252,7 +285,7 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     color: "#1B4371",
   },
-  password: {
+  inputContainer: {
     position: "relative",
     width: "100%",
   },
@@ -260,6 +293,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: "50%",
     right: 16,
+  },
+  errors: {
+    position: "absolute",
+    fontSize: 10,
+    color: "red",
+    alignSelf: "center",
   },
 });
 

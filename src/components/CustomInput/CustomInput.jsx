@@ -69,6 +69,10 @@ const styles = StyleSheet.create({
     borderColor: "#FF6C00",
     backgroundColor: "#fff",
   },
+  container_ERROR: {
+    borderColor: "red",
+    // backgroundColor: "#fff",
+  },
 
   input: {
     padding: 16,
@@ -78,13 +82,11 @@ const styles = StyleSheet.create({
     paddingLeft: 0,
     fontFamily: "Roboto-Regular",
     fontSize: 16,
-    // color: "#212121",
   },
   input_INACTIVE_MAP: {
     paddingLeft: 34,
     fontFamily: "Roboto-Regular",
     fontSize: 16,
-    // color: "#212121",
   },
 });
 

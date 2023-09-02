@@ -9,6 +9,8 @@ import PostsScreen from "./PostsScreen";
 import CreatePostsScreen from "./CreatePostsScreen";
 import ProfileScreen from "./ProfileScreen";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { ButtonGoBack } from "../components/ButtonGoBack/ButtonGoBack";
+import ButtonLogOut from "../components/ButtonLogOut/ButtonLogOut";
 
 const Tabs = createBottomTabNavigator();
 
@@ -16,17 +18,26 @@ const screenOptions = {
   headerTitleAlign: "center",
   tabBarShowLabel: false,
   tabBarStyle: {
+    boxShadow: "0px 0.5px 0px 0px rgba(0, 0, 0, 0.30)",
+    borderTopWidth: 0.3,
+    borderTopColor: "#b3b3b3",
     paddingHorizontal: 75,
-    // borderTopColor: "#808080",
     position: "absolute",
     bottom: 0,
     right: 0,
     left: 0,
     elevation: 0,
-    // justifyContent: "start",
-    // alignItems: "start",
     height: 83,
     background: "#fff",
+  },
+  headerTitleStyle: {
+    fontFamily: "Roboto-Medium",
+    color: "#212121",
+  },
+  headerStyle: {
+    boxShadow: "0px 0.5px 0px 0px rgba(0, 0, 0, 0.30)",
+    borderBottomWidth: 0.3,
+    borderBottomColor: "#B3B3B3",
   },
 };
 
@@ -44,31 +55,13 @@ const Home = () => {
   //   });
   // };
 
-  const onLogout = () => (
-    <TouchableOpacity
-      style={styles.logout}
-      onPress={() => navigation.navigate("Registration")}
-    >
-      <Feather name="log-out" size={24} color="#BDBDBD" />
-    </TouchableOpacity>
-  );
-
-  const onBack = () => (
-    <TouchableOpacity
-      style={styles.arrowLeft}
-      onPress={() => navigation.navigate("Публікації")}
-    >
-      <Feather name="arrow-left" size={24} color="#BDBDBD" />
-    </TouchableOpacity>
-  );
-
   return (
     <Tabs.Navigator screenOptions={screenOptions}>
       <Tabs.Screen
         name="Публікації"
         component={PostsScreen}
         options={{
-          headerRight: onLogout,
+          headerRight: () => <ButtonLogOut path="Registration" />,
           tabBarIcon: ({ focused }) => {
             return (
               <View style={styles.icon}>
@@ -86,7 +79,8 @@ const Home = () => {
         name="Створити публікацію"
         component={CreatePostsScreen}
         options={{
-          headerLeft: onBack,
+          // headerLeft: onBack,
+          headerLeft: () => <ButtonGoBack path="Публікації" />,
           tabBarIcon: ({ focused }) => {
             return (
               <View
@@ -110,6 +104,7 @@ const Home = () => {
         name="Профіль"
         component={ProfileScreen}
         options={{
+          headerShown: false,
           tabBarIcon: ({ focused }) => {
             return (
               <View style={styles.icon}>

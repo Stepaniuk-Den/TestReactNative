@@ -7,6 +7,9 @@ import Home from "./src/Screens/Home";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import "react-native-gesture-handler";
+import CommentsScreen from "./src/Screens/CommentsScreen";
+import { ButtonGoBack } from "./src/components/ButtonGoBack/ButtonGoBack";
+import MapScreen from "./src/Screens/MapScreen";
 
 const MainStack = createStackNavigator();
 
@@ -39,6 +42,40 @@ export default function App() {
           component={Home}
           options={{
             headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="Comments"
+          component={CommentsScreen}
+          options={{
+            title: "Коментарі",
+            headerLeft: () => <ButtonGoBack path="Публікації" />,
+            headerTitleStyle: {
+              fontFamily: "Roboto-Medium",
+              color: "#212121",
+            },
+            headerStyle: {
+              boxShadow: "0px 0.5px 0px 0px rgba(0, 0, 0, 0.30)",
+              borderBottomWidth: 0.3,
+              borderBottomColor: "#B3B3B3",
+            },
+          }}
+        />
+        <MainStack.Screen
+          name="Map"
+          component={MapScreen}
+          options={{
+            title: "Карти",
+            headerLeft: () => <ButtonGoBack path="Публікації" />,
+            headerTitleStyle: {
+              fontFamily: "Roboto-Medium",
+              color: "#212121",
+            },
+            headerStyle: {
+              boxShadow: "0px 0.5px 0px 0px rgba(0, 0, 0, 0.30)",
+              borderBottomWidth: 0.3,
+              borderBottomColor: "#B3B3B3",
+            },
           }}
         />
       </MainStack.Navigator>

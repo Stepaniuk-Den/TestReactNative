@@ -47,7 +47,6 @@ const LoginScreen = () => {
                 validationSchema={LoginSchema}
                 initialValues={{ email: "", password: "" }}
                 onSubmit={(values) => {
-                  // console.warn(values);
                   navigation.navigate("Home");
                 }}
               >
@@ -60,30 +59,36 @@ const LoginScreen = () => {
                   touched,
                 }) => (
                   <>
-                    <CustomInput
-                      name="email"
-                      placeholder="Адреса електронної пошти"
-                      value={values.email}
-                      autoCapitalize="none"
-                      autoComplete="email"
-                      keyboardType="email-address"
-                      onChangeText={handleChange("email")}
-                      error={errors.email}
-                      touched={touched.email}
-                      onSubmitEditing={() => handleSubmit()}
-                      onBlur={() => {
-                        setIsEmailFocus(false);
-                        handleBlur("email");
-                      }}
-                      onFocus={() => setIsEmailFocus(true)}
-                      type={!isEmailFocus ? null : "TERTIARY"}
-                    />
-                    {errors.email && touched.email ? (
-                      <Text style={{ fontSize: 10, color: "red" }}>
-                        {errors.email}
-                      </Text>
-                    ) : null}
-                    <View style={styles.password}>
+                    <View style={styles.inputContainer}>
+                      <CustomInput
+                        name="email"
+                        placeholder="Адреса електронної пошти"
+                        value={values.email}
+                        autoCapitalize="none"
+                        autoComplete="email"
+                        keyboardType="email-address"
+                        onChangeText={handleChange("email")}
+                        error={errors.email}
+                        touched={touched.email}
+                        onSubmitEditing={() => handleSubmit()}
+                        onBlur={() => {
+                          setIsEmailFocus(false);
+                          handleBlur;
+                        }}
+                        onFocus={() => setIsEmailFocus(true)}
+                        type={
+                          !isEmailFocus
+                            ? null
+                            : errors.email && touched.email
+                            ? "ERROR"
+                            : "TERTIARY"
+                        }
+                      />
+                      {errors.email && touched.email ? (
+                        <Text style={styles.errors}>{errors.email}</Text>
+                      ) : null}
+                    </View>
+                    <View style={styles.inputContainer}>
                       <CustomInput
                         name="password"
                         placeholder="••••••••••••"
@@ -107,7 +112,13 @@ const LoginScreen = () => {
                             ? null
                             : setVerticalOffset(-260);
                         }}
-                        type={!isPassFocus ? null : "TERTIARY"}
+                        type={
+                          !isPassFocus
+                            ? null
+                            : errors.password && touched.password
+                            ? "ERROR"
+                            : "TERTIARY"
+                        }
                       />
                       <Pressable
                         style={styles.textVisible}
@@ -115,12 +126,10 @@ const LoginScreen = () => {
                       >
                         <Text>{showPass}</Text>
                       </Pressable>
+                      {errors.password && touched.password ? (
+                        <Text style={styles.errors}>{errors.password}</Text>
+                      ) : null}
                     </View>
-                    {errors.password && touched.password ? (
-                      <Text style={{ fontSize: 10, color: "red" }}>
-                        {errors.password}
-                      </Text>
-                    ) : null}
                     <CustomButton
                       text="Увійти"
                       onPress={handleSubmit}
@@ -192,7 +201,7 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     color: "#1B4371",
   },
-  password: {
+  inputContainer: {
     position: "relative",
     width: "100%",
   },
@@ -200,6 +209,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: "50%",
     right: 16,
+  },
+  errors: {
+    position: "absolute",
+    fontSize: 10,
+    color: "red",
+    alignSelf: "center",
   },
 });
 

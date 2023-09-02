@@ -8,7 +8,7 @@ import {
   Keyboard,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import CustomInput from "../components/CustomInput/CustomInput";
 import CustomButton from "../components/CustomButton/CustomButton";
@@ -16,21 +16,29 @@ import CustomCamera from "../components/CustomCamera/CustomCamera";
 
 import { Feather } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
+import { useNavigation } from "@react-navigation/native";
 
 const CreatePostsScreen = () => {
+  const navigation = useNavigation();
+
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [cameraActivated, setCameraActivated] = useState(false);
   const [type, setType] = useState(Camera.Constants.Type.back);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [title, setTitle] = useState(null);
+  const [locations, setLocations] = useState(null);
+
+  const isActive = capturedImage && title && locations;
 
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
       await MediaLibrary.requestPermissionsAsync();
-
       setHasPermission(status === "granted");
     })();
   }, []);
@@ -41,6 +49,32 @@ const CreatePostsScreen = () => {
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
+
+  const takePhoto = async () => {
+    if (cameraRef) {
+      const { uri } = await cameraRef.takePictureAsync();
+      await MediaLibrary.createAssetAsync(uri);
+      setCapturedImage(uri);
+    }
+    setCameraActivated(false);
+  };
+
+  const createPost = () => {
+    if (!isActive) return;
+    navigation.navigate("Публікації");
+    deletePost();
+  };
+
+  const deletePost = () => {
+    setCapturedImage(null);
+    setTitle(null);
+    setLocations(null);
+  };
+
+  const changePhoto = () => {
+    setCapturedImage(null);
+    setCameraActivated(true);
+  };
 
   return (
     //
@@ -60,24 +94,17 @@ const CreatePostsScreen = () => {
                   );
                 }}
               >
-                <Text
-                  style={{ fontSize: 18, marginBottom: 10, color: "white" }}
-                >
-                  {" "}
-                  Flip{" "}
-                </Text>
+                <Ionicons
+                  name="camera-reverse"
+                  size={36}
+                  color="#bdbdbd"
+                  style={{
+                    marginBottom: 0,
+                    marginRight: 16,
+                  }}
+                />
               </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={async () => {
-                  setCameraActivated(false);
-                  if (cameraRef) {
-                    const { uri } = await cameraRef.takePictureAsync();
-                    await MediaLibrary.createAssetAsync(uri);
-                    console.warn(uri);
-                  }
-                }}
-              >
+              <TouchableOpacity style={styles.button} onPress={takePhoto}>
                 <View style={styles.takePhotoOut}>
                   <View style={styles.takePhotoInner}></View>
                 </View>
@@ -89,7 +116,9 @@ const CreatePostsScreen = () => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.root}>
             <View style={styles.imageThumb}>
-              {/* <Image style={styles.image} source={uri} /> */}
+              {capturedImage && (
+                <Image style={styles.image} source={{ uri: capturedImage }} />
+              )}
               <Pressable
                 style={styles.imageCamera}
                 onPress={() => setCameraActivated(true)}
@@ -97,23 +126,30 @@ const CreatePostsScreen = () => {
                 <FontAwesome name="camera" size={24} color="#bdbdbd" />
               </Pressable>
             </View>
-            <Text style={styles.imageText}>Завантажте фото</Text>
+            {!capturedImage ? (
+              <Text style={styles.imageText}>Завантажте фото</Text>
+            ) : (
+              <Text style={styles.imageText} onPress={changePhoto}>
+                Редагувати фото
+              </Text>
+            )}
             <CustomInput
               name="title"
               placeholder="Назва..."
               placeholderTextColor="#bdbdbd"
-              // value={title}
+              value={title}
               // onChangeText={handleChange("title")}
-              // onChangeText={(value)=> setTitle(value)}
+              onChangeText={(value) => setTitle(value)}
               type="INACTIVE"
             />
             <View style={styles.location}>
               <CustomInput
-                name="location"
+                name="locations"
                 placeholder="Місцевість..."
                 placeholderTextColor="#bdbdbd"
-                // value={location}
+                value={locations}
                 // onChangeText={handleChange("location")}
+                onChangeText={(value) => setLocations(value)}
                 type="INACTIVE_MAP"
               />
               <Pressable style={styles.locationIcon}>
@@ -122,11 +158,13 @@ const CreatePostsScreen = () => {
             </View>
             <CustomButton
               text="Опубліковати"
-              // onPress={}
-              type="INACTIVE"
+              onPress={createPost}
+              type={isActive ? "PRIMARY" : "INACTIVE"}
             />
-            <View style={styles.iconTrash}>
-              <Feather name="trash-2" size={24} color="#BDBDBD" />
+            <View style={styles.trashContainer}>
+              <Pressable style={styles.iconTrash} onPress={deletePost}>
+                <Feather name="trash-2" size={24} color="#BDBDBD" />
+              </Pressable>
             </View>
           </View>
         </TouchableWithoutFeedback>
@@ -143,12 +181,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     backgroundColor: "#fff",
   },
-  iconTrash: {
+  trashContainer: {
+    display: "flex",
     position: "absolute",
     bottom: 32,
-    // right: "50%",
-    left: "45%",
+    left: 16,
     elevation: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+  },
+  iconTrash: {
     alignItems: "center",
     justifyContent: "center",
     width: 70,
@@ -157,6 +200,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f6f6f6",
   },
   imageThumb: {
+    display: "flex",
     position: "relative",
     backgroundColor: "#f6f6f6",
     borderWidth: 1,
@@ -170,6 +214,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
+    height: "100%",
     resizeMode: "cover",
     // resizeMode: "stretch",
     // resizeMode: "contain",
