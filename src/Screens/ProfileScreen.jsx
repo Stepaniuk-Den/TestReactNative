@@ -1,8 +1,16 @@
-import { View, Text, StyleSheet, ImageBackground, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ImageBackground,
+  Image,
+  ScrollView,
+} from "react-native";
 import React from "react";
 
 import { AntDesign } from "@expo/vector-icons";
 import ButtonLogOut from "../components/ButtonLogOut/ButtonLogOut";
+import Post from "../components/Post/Post";
 
 const ProfileScreen = () => {
   const avatar = true;
@@ -29,6 +37,12 @@ const ProfileScreen = () => {
           <ButtonLogOut type={"profile"} path="Login" />
           {/* <Text>{username}</Text> */}
           <Text style={styles.title}>Natali Romanova</Text>
+          <ScrollView>
+            <Post page={true} location={"Ukraine"} />
+            <Post page={true} location={"Ukraine"} />
+            <Post page={true} location={"Ukraine"} />
+            <Post page={true} location={"Ukraine"} />
+          </ScrollView>
         </View>
       </ImageBackground>
     </View>
@@ -91,15 +105,6 @@ const styles = StyleSheet.create({
     top: 82,
     borderRadius: 50,
     backgroundColor: "#fff",
-  },
-
-  //////////////////////
-  textReg: {
-    flexDirection: "row",
-    marginTop: 16,
-  },
-  text: {
-    color: "#1B4371",
   },
 });
 

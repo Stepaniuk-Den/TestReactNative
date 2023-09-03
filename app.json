@@ -15,7 +15,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.stden.rnetest",
+      "config": {
+        "googleMapsApiKey": "AIzaSyDsRWKE7Yp_wDdmKNJ53cG4_2raEHlf5l0"
+      }
     },
     "android": {
       "softwareKeyboardLayoutMode": "pan",
@@ -26,6 +30,10 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+  },
+  "location": {
+    "permissions": ["location"]
+
   }
 }

@@ -15,8 +15,8 @@ import { useNavigation } from "@react-navigation/native";
 
 import { Formik } from "formik";
 
-import CustomInput from "../components/CustomInput";
-import CustomButton from "../components/CustomButton";
+import CustomInput from "../components/CustomInput/CustomInput";
+import CustomButton from "../components/CustomButton/CustomButton";
 
 import { AntDesign } from "@expo/vector-icons";
 

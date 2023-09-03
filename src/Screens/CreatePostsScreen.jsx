@@ -7,6 +7,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -21,8 +22,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import { useNavigation } from "@react-navigation/native";
+import { newLocation } from "../helpers/helpers";
 
 const CreatePostsScreen = () => {
+  const { location, coords, getLocation } = newLocation();
   const navigation = useNavigation();
 
   const [hasPermission, setHasPermission] = useState(null);
@@ -61,6 +64,8 @@ const CreatePostsScreen = () => {
 
   const createPost = () => {
     if (!isActive) return;
+    getLocation();
+    Alert.alert(`${title}, ${location}`);
     navigation.navigate("Публікації");
     deletePost();
   };

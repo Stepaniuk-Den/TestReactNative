@@ -3,13 +3,13 @@ import { useFonts } from "expo-font";
 import RegistrationScreen from "./src/Screens/RegistrationScreen";
 import LoginScreen from "./src/Screens/LoginScreen";
 import Home from "./src/Screens/Home";
+import CommentsScreen from "./src/Screens/CommentsScreen";
+import MapScreen from "./src/Screens/MapScreen";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import "react-native-gesture-handler";
-import CommentsScreen from "./src/Screens/CommentsScreen";
-import { ButtonGoBack } from "./src/components/ButtonGoBack/ButtonGoBack";
-import MapScreen from "./src/Screens/MapScreen";
+import ButtonGoBack from "./src/components/ButtonGoBack/ButtonGoBack";
 
 const MainStack = createStackNavigator();
 
@@ -49,7 +49,7 @@ export default function App() {
           component={CommentsScreen}
           options={{
             title: "Коментарі",
-            headerLeft: () => <ButtonGoBack path="Публікації" />,
+            headerLeft: () => <ButtonGoBack />,
             headerTitleStyle: {
               fontFamily: "Roboto-Medium",
               color: "#212121",
@@ -66,7 +66,7 @@ export default function App() {
           component={MapScreen}
           options={{
             title: "Карти",
-            headerLeft: () => <ButtonGoBack path="Публікації" />,
+            headerLeft: () => <ButtonGoBack />,
             headerTitleStyle: {
               fontFamily: "Roboto-Medium",
               color: "#212121",

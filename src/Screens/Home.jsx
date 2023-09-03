@@ -9,7 +9,7 @@ import PostsScreen from "./PostsScreen";
 import CreatePostsScreen from "./CreatePostsScreen";
 import ProfileScreen from "./ProfileScreen";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { ButtonGoBack } from "../components/ButtonGoBack/ButtonGoBack";
+import ButtonGoBack from "../components/ButtonGoBack/ButtonGoBack";
 import ButtonLogOut from "../components/ButtonLogOut/ButtonLogOut";
 
 const Tabs = createBottomTabNavigator();
