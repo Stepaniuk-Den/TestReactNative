@@ -30,10 +30,10 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-  },
-  "location": {
-    "permissions": ["location"]
-
+    }
   }
+  // "location": {
+  //   "permissions": ["location"]
+
+  // }
 }

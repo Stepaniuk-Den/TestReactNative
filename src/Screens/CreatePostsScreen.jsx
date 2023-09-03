@@ -24,27 +24,54 @@ import * as MediaLibrary from "expo-media-library";
 import { useNavigation } from "@react-navigation/native";
 import { newLocation } from "../helpers/helpers";
 
+import * as Location from "expo-location";
+
 const CreatePostsScreen = () => {
   const { location, coords, getLocation } = newLocation();
   const navigation = useNavigation();
+
+  // const [location, setLocation] = useState(null);
+  // const [coords, setCoords] = useState(null);
 
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [cameraActivated, setCameraActivated] = useState(false);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [capturedImage, setCapturedImage] = useState(null);
+
   const [title, setTitle] = useState(null);
   const [locations, setLocations] = useState(null);
 
-  const isActive = capturedImage && title && locations;
+  const isActive = capturedImage && title;
 
   useEffect(() => {
+    // (async () => {
+    //   await Location.requestForegroundPermissionsAsync();
+    // })();
+    // (async () => {
+    //   const location = await Location.getCurrentPositionAsync();
+    //   setCoords(location);
+    // })();
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
       await MediaLibrary.requestPermissionsAsync();
       setHasPermission(status === "granted");
     })();
   }, []);
+
+  // useEffect(() => {}, []);
+
+  // const getLocation = async () => {
+  //   try {
+  //     const address = await Location.reverseGeocodeAsync({
+  //       latitude: coords.coords.latitude,
+  //       longitude: coords.coords.longitude,
+  //     });
+  //     setLocation(`${address[0].city}, ${address[0].country}`);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   if (hasPermission === null) {
     return <View />;
@@ -55,6 +82,7 @@ const CreatePostsScreen = () => {
 
   const takePhoto = async () => {
     if (cameraRef) {
+      getLocation();
       const { uri } = await cameraRef.takePictureAsync();
       await MediaLibrary.createAssetAsync(uri);
       setCapturedImage(uri);
@@ -64,7 +92,6 @@ const CreatePostsScreen = () => {
 
   const createPost = () => {
     if (!isActive) return;
-    getLocation();
     Alert.alert(`${title}, ${location}`);
     navigation.navigate("Публікації");
     deletePost();

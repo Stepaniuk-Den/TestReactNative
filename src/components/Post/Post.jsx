@@ -5,12 +5,12 @@ import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
 // const Post = ({ title, locations, count }) => {
-const Post = ({ page, location }) => {
+const Post = ({ page, loc }) => {
   const navigation = useNavigation();
   const count = 0;
   const countLikes = 0;
   // const locations = "Ivano-Frankivs'k Region, Ukraine";
-  const locations = location;
+  const place = loc;
   const title = "Ліс";
   // const [isProfile, setIsProfile] = useState(false);
   const isProfile = page;
@@ -65,7 +65,7 @@ const Post = ({ page, location }) => {
           >
             <Feather name="map-pin" size={24} color="#BDBDBD" />
           </Pressable>
-          <Text style={styles.locations}>{locations}</Text>
+          <Text style={styles.locations}>{place}</Text>
         </View>
       </View>
     </View>

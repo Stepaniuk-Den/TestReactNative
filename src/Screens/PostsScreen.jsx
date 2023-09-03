@@ -18,7 +18,7 @@ const PostsScreen = () => {
           <Text style={styles.userEmail}>email</Text>
         </View>
       </View>
-      <Post location={"Ivano-Frankivs'k Region, Ukraine"} />
+      <Post loc={"Ivano-Frankivs'k Region, Ukraine"} />
     </View>
   );
 };
