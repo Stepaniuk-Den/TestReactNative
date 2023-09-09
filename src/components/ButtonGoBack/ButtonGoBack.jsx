@@ -8,7 +8,8 @@ const ButtonGoBack = ({ path }) => {
   return (
     <TouchableOpacity
       style={styles.arrowLeft}
-      onPress={() => (path ? navigation.navigate(path) : navigation.goBack())}
+      // onPress={() => (path ? navigation.navigate(path) : navigation.goBack())}
+      onPress={() => navigation.goBack()}
     >
       <AntDesign name="arrowleft" size={24} color="rgba(33, 33, 33, 0.8)" />
     </TouchableOpacity>

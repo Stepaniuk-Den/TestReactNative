@@ -1,30 +1,77 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import React, { useState } from "react";
+import { View, Text, Pressable, StyleSheet, Image } from "react-native";
+import React, { useEffect, useState } from "react";
 
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
-// const Post = ({ title, locations, count }) => {
-const Post = ({ page, loc }) => {
+import {
+  collection,
+  doc,
+  getCountFromServer,
+  updateDoc,
+} from "firebase/firestore";
+import { db } from "../../../config";
+
+const Post = ({
+  capturedImage,
+  title,
+  locationPhoto,
+  locationAddressCountry,
+  locationAddressCity,
+  postId,
+  likes,
+  page,
+}) => {
   const navigation = useNavigation();
-  const count = 0;
-  const countLikes = 0;
-  // const locations = "Ivano-Frankivs'k Region, Ukraine";
-  const place = loc;
-  const title = "Ліс";
-  // const [isProfile, setIsProfile] = useState(false);
+  const [count, setCount] = useState(null);
+  const [countLikes, setCountLikes] = useState(false);
+
   const isProfile = page;
 
+  const onLike = async () => {
+    setCountLikes(!countLikes);
+
+    if (countLikes) {
+      await updateDoc(doc(db, "posts", postId), {
+        like: likes - 1,
+      });
+      return;
+    }
+    await updateDoc(doc(db, "posts", postId), {
+      like: likes ? likes + 1 : 1,
+    });
+    return;
+  };
+
+  const getCommentsCount = async () => {
+    try {
+      const coll = collection(db, "posts", postId, "comments");
+      const snapshot = await getCountFromServer(coll);
+      setCount(snapshot.data().count);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getCommentsCount();
+  }, []);
   return (
     <View>
-      <View style={styles.postImageThumb}></View>
+      <View style={styles.postImageThumb}>
+        <Image
+          style={styles.image}
+          source={{ uri: capturedImage }}
+          resizeMode="cover"
+        />
+      </View>
       <Text style={styles.postTitle}>{title}</Text>
       <View style={styles.postData}>
         <View style={styles.dataComments}>
           <Pressable
             style={styles.comments}
             onPress={() => {
-              navigation.navigate("Comments");
+              navigation.navigate("CommentsScreen", { capturedImage, postId });
             }}
           >
             <Feather
@@ -35,14 +82,10 @@ const Post = ({ page, loc }) => {
           </Pressable>
           <Text style={count ? styles.count : styles.countEmpty}>{count}</Text>
         </View>
+
         {isProfile && (
           <View style={styles.dataLikes}>
-            <Pressable
-              style={styles.likes}
-              onPress={() => {
-                navigation.navigate("Comments");
-              }}
-            >
+            <Pressable style={styles.likes} onPress={onLike}>
               <Feather
                 style={countLikes ? styles.likesIcon : styles.likesIconEmpty}
                 name="thumbs-up"
@@ -52,20 +95,37 @@ const Post = ({ page, loc }) => {
             <Text
               style={countLikes ? styles.countLikes : styles.countLikesEmpty}
             >
-              {countLikes}
+              {likes ? likes : 0}
             </Text>
           </View>
         )}
+
         <View style={styles.dataLocations}>
           <Pressable
             style={styles.locationsIcon}
             onPress={() => {
-              navigation.navigate("Map");
+              navigation.navigate("MapScreen", {
+                locationPhoto,
+                title,
+                locationAddressCountry,
+                locationAddressCity,
+              });
             }}
           >
             <Feather name="map-pin" size={24} color="#BDBDBD" />
           </Pressable>
-          <Text style={styles.locations}>{place}</Text>
+
+          {/* <Text style={styles.locations}>
+            {locationAddressCity}, {locationAddressCountry}
+          </Text> */}
+
+          {isProfile ? (
+            <Text style={styles.locations}>{locationAddressCountry}</Text>
+          ) : (
+            <Text style={styles.locations}>
+              {locationAddressCity}, {locationAddressCountry}
+            </Text>
+          )}
         </View>
       </View>
     </View>
@@ -85,6 +145,13 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+    // resizeMode: "stretch",
+    // resizeMode: "contain",
   },
   postTitle: {
     paddingVertical: 8,

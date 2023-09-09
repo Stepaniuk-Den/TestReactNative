@@ -21,65 +21,41 @@ export const toggleVisibilityHelper = () => {
   };
 };
 
-export const newLocation = () => {
-  const [location, setLocation] = useState(null);
-  const [coords, setCoords] = useState(null);
+// export const newLocation = () => {
+//   const [locationAddress, setLocationAddress] = useState(null);
+//   const [location, setLocation] = useState(null);
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.error("Permission to access location was denied");
-        return;
-      }
+//   useEffect(() => {
+//     (async () => {
+//       const { status } = await Location.requestForegroundPermissionsAsync();
+//       if (status !== "granted") {
+//         console.error("Permission to access location was denied");
+//         return;
+//       }
 
-      const currentLocation = await Location.getCurrentPositionAsync({});
-      setCoords(currentLocation);
-    })();
-  }, []);
+//       // const currentLocation = await Location.getCurrentPositionAsync({});
+//       // setCoords(currentLocation);
+//     })();
+//   }, []);
 
-  const getLocation = async () => {
-    try {
-      const address = await Location.reverseGeocodeAsync({
-        latitude: coords.coords.latitude,
-        longitude: coords.coords.longitude,
-      });
-      setLocation(`${address[0].city}, ${address[0].country}`);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  return { location, coords, getLocation };
-};
-
-//////////////////////////////////////////////////
-// const [coords, setCoords] = useState(null);
-// const getLocation = async () => {
+//   const getLocation = async () => {
 //     try {
+//       const currentLocation = await Location.getCurrentPositionAsync({});
 //       const address = await Location.reverseGeocodeAsync({
-//         latitude: coords.coords.latitude,
-//         longitude: coords.coords.longitude,
+//         latitude: currentLocation.coords.latitude,
+//         longitude: currentLocation.coords.longitude,
 //       });
-//       setLocation(${address[0].city}, ${address[0].country});
+//       const latitude = currentLocation.coords.latitude;
+//       const longitude = currentLocation.coords.longitude;
+//       setLocationAddress({
+//         city: `${address[0].city}`,
+//         country: `${address[0].country}`,
+//       });
+//       setLocation({ latitude: latitude, longitude: longitude });
 //     } catch (error) {
 //       console.log(error);
 //     }
+//   };
+
+//   return { locationAddress, location, getLocation };
 // };
-
-// useEffect(() => {
-//     (async () => {
-//       await Location.requestForegroundPermissionsAsync();
-//     })();
-//     (async () => {
-//       const location = await Location.getCurrentPositionAsync();
-//       setCoords(location);
-//     })();
-
-//     (async () => {
-//       const { status } = await Camera.requestCameraPermissionsAsync();
-//       await MediaLibrary.requestPermissionsAsync();
-
-//       setHasPermission(status === "granted");
-//     })();
-//   }, []);

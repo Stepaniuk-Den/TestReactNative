@@ -7,6 +7,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
@@ -18,8 +19,12 @@ import CustomButton from "../components/CustomButton/CustomButton";
 import { toggleVisibilityHelper } from "../helpers/helpers";
 import LoginSchema from "../validation/LoginSchema";
 
+import { authSignInUser } from "../redux/operations";
+import { useDispatch } from "react-redux";
+
 const LoginScreen = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const [isEmailFocus, setIsEmailFocus] = useState(false);
   const [isPassFocus, setIsPassFocus] = useState(false);
@@ -47,7 +52,8 @@ const LoginScreen = () => {
                 validationSchema={LoginSchema}
                 initialValues={{ email: "", password: "" }}
                 onSubmit={(values) => {
-                  navigation.navigate("Home");
+                  dispatch(authSignInUser(values));
+                  // navigation.navigate("Home");
                 }}
               >
                 {({
@@ -142,7 +148,7 @@ const LoginScreen = () => {
                 <Text style={styles.text}>Немає акаунту? </Text>
                 <Text
                   style={styles.textRegClick}
-                  onPress={() => navigation.navigate("Registration")}
+                  onPress={() => navigation.navigate("RegistrationScreen")}
                 >
                   Зареєструватися
                 </Text>

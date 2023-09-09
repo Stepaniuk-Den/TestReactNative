@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Pressable,
   StyleSheet,
@@ -11,7 +11,11 @@ import {
   Image,
   StatusBar,
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import * as ImagePicker from "expo-image-picker";
+
+import { auth } from "../../config";
 
 import { Formik } from "formik";
 
@@ -23,24 +27,101 @@ import { AntDesign } from "@expo/vector-icons";
 import { toggleVisibilityHelper } from "../helpers/helpers";
 import RegisterSchema from "../validation/RegisterSchema";
 
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../config";
+import { addUser } from "../redux/rootReducer";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { selectUserData } from "../redux/selectors";
+
 const RegistrationScreen = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const [isUserFocus, setIsUserFocus] = useState(false);
   const [isEmailFocus, setIsEmailFocus] = useState(false);
   const [isPassFocus, setIsPassFocus] = useState(false);
   const [avatar, setAvatar] = useState(null);
+  const [user, setUser] = useState(null);
 
   const { visibility, showPass, toggleVisibility } = toggleVisibilityHelper();
 
   const verticalOffsetDefault = -140;
   const [verticalOffset, setVerticalOffset] = useState(verticalOffsetDefault);
+  const userData = useSelector(selectUserData);
+
+  const saveImage = async () => {
+    try {
+      const response = await fetch(avatar);
+      const file = await response.blob();
+      await uploadBytes(ref(storage, `avatars/${file._data.blobId}`), file);
+      const imgUrl = await getDownloadURL(
+        ref(storage, `avatars/${file._data.blobId}`)
+      );
+      return imgUrl;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setAvatar(result.assets[0].uri);
+    }
+    saveImage();
+  };
+
+  const handleSignUp = () => {
+    createUserWithEmailAndPassword(auth, user.email, user.password)
+      .then((userCredential) => {
+        const updatedUser = {
+          displayName: user.username,
+          photoURL: avatar ? avatar : null,
+        };
+        return updateProfile(userCredential.user, updatedUser).then(() => {
+          return signInWithEmailAndPassword(
+            auth,
+            user.email,
+            user.password
+          ).then(() => {
+            const userData = {
+              email: userCredential.user.email,
+              uid: userCredential.user.uid,
+              // token: userCredential.user.stsTokenManager.accessToken,
+            };
+            dispatch(
+              addUser({
+                ...userData,
+                ...updatedUser,
+              })
+            );
+          });
+        });
+      })
+      .catch((error) => {
+        if (error.code === "auth/email-already-in-use") {
+          Alert.alert("Користувач з таким email вже зареєстрований");
+        } else {
+          console.log(error.code, error.message);
+        }
+      });
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
         behavior={Platform.OS == "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
-        // keyboardVerticalOffset={-160}
         keyboardVerticalOffset={Platform.OS == "ios" ? -160 : verticalOffset}
       >
         <View style={styles.root}>
@@ -52,27 +133,30 @@ const RegistrationScreen = () => {
               <View style={styles.avatar}>
                 {avatar ? (
                   <Image
-                    source={require("../../assets/images/testAvatar.png")}
-                    resizeMode="contain"
+                    style={styles.avatarImage}
+                    source={{ uri: avatar }}
+                    resizeMode="cover"
                   />
                 ) : null}
-                <View style={styles.addIconContainer}>
+                <Pressable style={styles.addIconContainer} onPress={pickImage}>
                   <AntDesign
                     style={avatar ? styles.deleteIcon : styles.addIcon}
                     name="pluscircleo"
                     size={24}
                   />
-                </View>
+                </Pressable>
               </View>
               <Text style={styles.title}>Реєстрація</Text>
               <Formik
                 validationSchema={RegisterSchema}
                 initialValues={{ username: "", email: "", password: "" }}
                 onSubmit={(values, actions) => {
-                  // console.warn(values);
-                  // addUser(values);
-                  navigation.navigate("Home", values);
-                  actions.resetForm();
+                  setUser(values);
+                  if (user) {
+                    actions.resetForm();
+                    handleSignUp();
+                    // navigation.navigate("Home");
+                  }
                 }}
               >
                 {({
@@ -203,7 +287,7 @@ const RegistrationScreen = () => {
                 <Text style={styles.text}>Вже є акаунт? </Text>
                 <Text
                   style={styles.textRegClick}
-                  onPress={() => navigation.navigate("Login")}
+                  onPress={() => navigation.navigate("LoginScreen")}
                 >
                   Увійти
                 </Text>
@@ -258,6 +342,12 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     marginTop: -60,
+    // overflow: "hidden",
+  },
+  avatarImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 16,
   },
 
   deleteIcon: {

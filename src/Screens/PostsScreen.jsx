@@ -1,68 +1,84 @@
-import { View, Text, StyleSheet, Image } from "react-native";
-import React from "react";
-import Post from "../components/Post/Post";
+import { createStackNavigator } from "@react-navigation/stack";
+import CommentsScreen from "./CommentsScreen";
+import ButtonGoBack from "../components/ButtonGoBack/ButtonGoBack";
+import MapScreen from "./MapScreen";
+import InitialPostsScreen from "./InitialPostsScreen";
+
+import { Feather } from "@expo/vector-icons";
+import { Pressable } from "react-native";
+import { authSingOutUser } from "../redux/operations";
+import { useDispatch } from "react-redux";
+
+const NestedScreen = createStackNavigator();
 
 const PostsScreen = () => {
+  const dispatch = useDispatch();
+
   return (
-    <View style={styles.root}>
-      <View style={styles.user}>
-        <View style={styles.userAvatar}>
-          <Image
-            style={styles.userImage}
-            source={require("../../assets/images/testAvatar.png")}
-            resizeMode="cover"
-          />
-        </View>
-        <View style={styles.userData}>
-          <Text style={styles.userName}>userName</Text>
-          <Text style={styles.userEmail}>email</Text>
-        </View>
-      </View>
-      <Post loc={"Ivano-Frankivs'k Region, Ukraine"} />
-    </View>
+    <NestedScreen.Navigator initialRouteName="PostsScreen">
+      <NestedScreen.Screen
+        name="InitialPostsScreen"
+        component={InitialPostsScreen}
+        options={{
+          headerTitle: "Публікації",
+          headerLeft: false,
+          headerRight: () => (
+            <Pressable
+              style={{ marginRight: 16 }}
+              onPress={() => dispatch(authSingOutUser())}
+            >
+              <Feather name="log-out" size={24} color="#BDBDBD" />
+            </Pressable>
+          ),
+          headerTitleStyle: {
+            fontFamily: "Roboto-Medium",
+            color: "#212121",
+          },
+          headerStyle: {
+            boxShadow: "0px 0.5px 0px 0px rgba(0, 0, 0, 0.30)",
+            borderBottomWidth: 1,
+            borderBottomColor: "#E8E8E8",
+          },
+        }}
+      />
+
+      <NestedScreen.Screen
+        name="CommentsScreen"
+        component={CommentsScreen}
+        options={{
+          title: "Коментарі",
+          headerLeft: () => <ButtonGoBack />,
+          headerTitleStyle: {
+            fontFamily: "Roboto-Medium",
+            color: "#212121",
+          },
+          headerStyle: {
+            boxShadow: "0px 0.5px 0px 0px rgba(0, 0, 0, 0.30)",
+            borderBottomWidth: 1,
+            borderBottomColor: "#E8E8E8",
+          },
+        }}
+      />
+
+      <NestedScreen.Screen
+        name="MapScreen"
+        component={MapScreen}
+        options={{
+          title: "Map",
+          headerLeft: () => <ButtonGoBack />,
+          headerTitleStyle: {
+            fontFamily: "Roboto-Medium",
+            color: "#212121",
+          },
+          headerStyle: {
+            boxShadow: "0px 0.5px 0px 0px rgba(0, 0, 0, 0.30)",
+            borderBottomWidth: 1,
+            borderBottomColor: "#E8E8E8",
+          },
+        }}
+      />
+    </NestedScreen.Navigator>
   );
 };
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    paddingVertical: 32,
-    paddingHorizontal: 16,
-    backgroundColor: "#fff",
-  },
-  user: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  userAvatar: {
-    backgroundColor: "#f6f6f6",
-    borderRadius: 16,
-    width: 60,
-    height: 60,
-    overflow: "hidden",
-  },
-  userImage: {
-    width: 60,
-    height: 60,
-    // resizeMode: "stretch",
-    // resizeMode: "contain",
-    // resizeMode: "cover",
-  },
-
-  userData: {
-    marginHorizontal: 8,
-  },
-  userName: {
-    fontFamily: "Roboto-Bold",
-    color: "#212121",
-    fontSize: 13,
-  },
-  userEmail: {
-    fontFamily: "Roboto-Regular",
-    color: "rgba(33, 33, 33, 0.8)",
-    fontSize: 11,
-  },
-});
 
 export default PostsScreen;

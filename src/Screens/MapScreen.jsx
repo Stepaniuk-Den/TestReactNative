@@ -1,42 +1,36 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import * as Location from "expo-location";
+import MapView, { Marker } from "react-native-maps";
+import { Dimensions, StyleSheet, View } from "react-native";
+import { PROVIDER_GOOGLE } from "react-native-maps";
 
-const MapScreen = () => {
-  const [location, setLocation] = useState(null);
+export const MapScreen = ({ route }) => {
+  const title = route.params.title;
+  const addressCountry = route.params.locationAddressCountry;
+  const addressCity = route.params.locationAddressCity;
+  const { latitude, longitude } = route.params.locationPhoto;
 
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Permission to access location was denied");
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-      const coords = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      };
-      setLocation(coords);
-      console.log(coords);
-    })();
-  }, []);
   return (
     <View style={styles.container}>
       <MapView
-        provider={PROVIDER_GOOGLE}
         style={styles.mapStyle}
-        region={{
-          ...location,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
+        initialRegion={{
+          latitude: latitude,
+          longitude: longitude,
+          latitudeDelta: 0.001,
+          longitudeDelta: 0.006,
         }}
+        mapType="standard"
+        minZoomLevel={15}
         showsUserLocation={true}
+        provider={PROVIDER_GOOGLE}
       >
-        {location && (
-          <Marker title="I am here" coordinate={location} description="Hello" />
-        )}
+        <Marker
+          coordinate={{
+            latitude: latitude,
+            longitude: longitude,
+          }}
+          title={title}
+          description={(addressCity, addressCountry)}
+        />
       </MapView>
     </View>
   );

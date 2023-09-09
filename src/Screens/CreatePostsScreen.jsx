@@ -9,11 +9,14 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+
+import { nanoid } from "@reduxjs/toolkit";
 import React, { useEffect, useRef, useState } from "react";
+import * as Location from "expo-location";
 
 import CustomInput from "../components/CustomInput/CustomInput";
 import CustomButton from "../components/CustomButton/CustomButton";
-import CustomCamera from "../components/CustomCamera/CustomCamera";
 
 import { Feather } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
@@ -22,16 +25,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import { useNavigation } from "@react-navigation/native";
-import { newLocation } from "../helpers/helpers";
+import { selectUserData } from "../redux/selectors";
 
-import * as Location from "expo-location";
+import { uploadBytes, getDownloadURL, ref } from "firebase/storage";
+import { addDoc, collection } from "firebase/firestore";
+import { db, storage } from "../../config";
 
 const CreatePostsScreen = () => {
-  const { location, coords, getLocation } = newLocation();
+  const dispatch = useDispatch();
   const navigation = useNavigation();
-
-  // const [location, setLocation] = useState(null);
-  // const [coords, setCoords] = useState(null);
 
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
@@ -41,37 +43,43 @@ const CreatePostsScreen = () => {
 
   const [title, setTitle] = useState(null);
   const [locations, setLocations] = useState(null);
+  const [locationAddressCity, setLocationAddressCity] = useState(null);
+  const [locationAddressCountry, setLocationAddressCountry] = useState(null);
+  const [locationPhoto, setLocationPhoto] = useState(null);
 
   const isActive = capturedImage && title;
+  const userData = useSelector(selectUserData);
 
   useEffect(() => {
-    // (async () => {
-    //   await Location.requestForegroundPermissionsAsync();
-    // })();
-    // (async () => {
-    //   const location = await Location.getCurrentPositionAsync();
-    //   setCoords(location);
-    // })();
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.error("Permission to access location was denied");
+        return;
+      }
+      try {
+        const currentLocation = await Location.getCurrentPositionAsync({});
+        const address = await Location.reverseGeocodeAsync({
+          latitude: currentLocation.coords.latitude,
+          longitude: currentLocation.coords.longitude,
+        });
+        const latitude = currentLocation.coords.latitude;
+        const longitude = currentLocation.coords.longitude;
+
+        setLocationAddressCity(`${address[0].city}`);
+        setLocationAddressCountry(`${address[0].country}`);
+        setLocationPhoto({ latitude: latitude, longitude: longitude });
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
       await MediaLibrary.requestPermissionsAsync();
       setHasPermission(status === "granted");
     })();
   }, []);
-
-  // useEffect(() => {}, []);
-
-  // const getLocation = async () => {
-  //   try {
-  //     const address = await Location.reverseGeocodeAsync({
-  //       latitude: coords.coords.latitude,
-  //       longitude: coords.coords.longitude,
-  //     });
-  //     setLocation(`${address[0].city}, ${address[0].country}`);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
   if (hasPermission === null) {
     return <View />;
@@ -82,7 +90,6 @@ const CreatePostsScreen = () => {
 
   const takePhoto = async () => {
     if (cameraRef) {
-      getLocation();
       const { uri } = await cameraRef.takePictureAsync();
       await MediaLibrary.createAssetAsync(uri);
       setCapturedImage(uri);
@@ -90,9 +97,58 @@ const CreatePostsScreen = () => {
     setCameraActivated(false);
   };
 
+  const pickImage = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+      if (!result.canceled) {
+        setCapturedImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const saveImage = async () => {
+    try {
+      const response = await fetch(capturedImage);
+      const file = await response.blob();
+      await uploadBytes(ref(storage, `avatars/${file._data.blobId}`), file);
+      const imgUrl = await getDownloadURL(
+        ref(storage, `avatars/${file._data.blobId}`)
+      );
+      return imgUrl;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const uploadPost = async () => {
+    try {
+      const capturedImage = await saveImage();
+      await addDoc(collection(db, "posts"), {
+        userId: userData.userId,
+        username: userData.username,
+        capturedImage,
+        title,
+        // coords: coords.coords,
+        locationPhoto,
+        locationAddressCity,
+        locationAddressCountry,
+        date: Date.now().toString(),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const createPost = () => {
     if (!isActive) return;
-    Alert.alert(`${title}, ${location}`);
+    uploadPost();
     navigation.navigate("Публікації");
     deletePost();
   };
@@ -109,10 +165,8 @@ const CreatePostsScreen = () => {
   };
 
   return (
-    //
     <>
       {cameraActivated ? (
-        // <CustomCamera />
         <View style={styles.container}>
           <Camera style={styles.camera} type={type} ref={setCameraRef}>
             <View style={styles.photoView}>
@@ -179,9 +233,7 @@ const CreatePostsScreen = () => {
                 name="locations"
                 placeholder="Місцевість..."
                 placeholderTextColor="#bdbdbd"
-                value={locations}
-                // onChangeText={handleChange("location")}
-                onChangeText={(value) => setLocations(value)}
+                value={`${locationAddressCity}, ${locationAddressCountry}`}
                 type="INACTIVE_MAP"
               />
               <Pressable style={styles.locationIcon}>
