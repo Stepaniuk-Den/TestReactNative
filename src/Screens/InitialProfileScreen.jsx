@@ -11,7 +11,8 @@ import {
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
-import { nanoid } from "@reduxjs/toolkit";
+
+import { Feather } from "@expo/vector-icons";
 
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
@@ -76,11 +77,13 @@ const InitialProfileScreen = () => {
               />
             </Pressable>
           </View>
-          <ButtonLogOut
-            type={"profile"}
-            path="Login"
+          <ButtonLogOut onPress={() => dispatch(authSingOutUser())} />
+          <Pressable
+            style={styles.logout}
             onPress={() => dispatch(authSingOutUser())}
-          />
+          >
+            <Feather name="log-out" size={24} color="#BDBDBD" />
+          </Pressable>
           <Text style={styles.title}>{username}</Text>
           <SafeAreaView style={styles.scrollview}>
             <FlatList
@@ -171,6 +174,16 @@ const styles = StyleSheet.create({
   },
   scrollview: {
     marginBottom: 90,
+  },
+  logout: {
+    width: 24,
+    height: 24,
+    marginRight: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    top: 22,
+    right: 0,
   },
 });
 
