@@ -63,7 +63,11 @@ const InitialProfileScreen = () => {
       >
         <View style={styles.rootProfile}>
           <View style={styles.avatar}>
-            <Image source={{ uri: img }} resizeMode="cover" />
+            <Image
+              style={styles.avatarImg}
+              source={{ uri: img }}
+              resizeMode="cover"
+            />
             <Pressable style={styles.addIconContainer} onPress={pickImage}>
               <AntDesign
                 style={img ? styles.deleteIcon : styles.addIcon}
@@ -145,6 +149,11 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     marginTop: -60,
+  },
+  avatarImg: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 16,
   },
   deleteIcon: {
     color: "#BDBDBD",
