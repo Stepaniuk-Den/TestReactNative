@@ -26,14 +26,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.stden.rnetest"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a00fb41e-5fe7-4e2c-8730-1158c7261586"
+      }
+    },
+    "owner": "murderua"
   }
-  // "location": {
-  //   "permissions": ["location"]
-
-  // }
 }
